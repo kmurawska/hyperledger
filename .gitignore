@@ -2,3 +2,6 @@
 .idea
 .settings
 target
+hyperledger/crypto-config
+hyperledger/channel-artifacts
+hyperledger/users-store
