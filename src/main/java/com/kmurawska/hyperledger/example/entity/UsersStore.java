@@ -1,4 +1,4 @@
-package com.kmurawska.hyperledger;
+package com.kmurawska.hyperledger.example.entity;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -6,20 +6,20 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
-class UsersStore {
+public class UsersStore {
     private final Path keyStorePath;
 
-    UsersStore(String keyStorePath) {
+    public UsersStore(String keyStorePath) {
         this.keyStorePath = Paths.get(keyStorePath);
     }
 
-    void save(User user) throws IOException {
+    public void save(User user) throws IOException {
         try (ObjectOutputStream o = new ObjectOutputStream(new FileOutputStream(keyStorePath.resolve(user.getName()).toFile()))) {
             o.writeObject(user);
         }
     }
 
-    Optional<User> load(String userName) throws IOException, ClassNotFoundException {
+    public Optional<User> load(String userName) throws IOException, ClassNotFoundException {
         Path file = keyStorePath.resolve(userName);
         if (!Files.exists(file) || !Files.isRegularFile(file)) {
             return Optional.empty();

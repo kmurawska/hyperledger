@@ -1,24 +1,24 @@
-package com.kmurawska.hyperledger;
+package com.kmurawska.hyperledger.example.entity;
 
-class Query {
+public class ChaincodeQuery {
     private final String chaincode, function;
     private final String[] args;
 
-    Query(String chaincode, String function, String[] args) {
+    public ChaincodeQuery(String chaincode, String function, String[] args) {
         this.chaincode = chaincode;
         this.function = function;
         this.args = args;
     }
 
-    String getChaincode() {
+    public String getChaincode() {
         return chaincode;
     }
 
-    String getFunction() {
+    public String getFunction() {
         return function;
     }
 
-    String[] getArgs() {
+    public String[] getArgs() {
         return args;
     }
 }

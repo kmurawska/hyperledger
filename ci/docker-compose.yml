@@ -10,7 +10,7 @@ services:
       - FABRIC_CA_HOME=/etc/hyperledger/fabric-ca-server
       - FABRIC_CA_SERVER_CA_NAME=ca.example.com
       - FABRIC_CA_SERVER_CA_CERTFILE=/etc/hyperledger/fabric-ca-server-config/ca.org1.example.com-cert.pem
-      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/ae067d342127b7c106de3459528e91d273893c216891090112d029514b845c42_sk
+      - FABRIC_CA_SERVER_CA_KEYFILE=/etc/hyperledger/fabric-ca-server-config/d20f57ca882242dc9dc310040921e92baf6314058fcfc6b1dbca13fb4f0c1093_sk
       #FABRIC_CA_SERVER_CA_KEYFILE: change when crypto materials regenerated -> crypto-config/peerOrganizations/org1.example.com/ca/
     ports:
       - "7054:7054"

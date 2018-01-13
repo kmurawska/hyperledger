@@ -1,4 +1,4 @@
-package com.kmurawska.hyperledger;
+package com.kmurawska.hyperledger.example.entity;
 
 import org.hyperledger.fabric.sdk.Enrollment;
 
@@ -6,11 +6,11 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-class User implements org.hyperledger.fabric.sdk.User, Serializable {
+public class User implements org.hyperledger.fabric.sdk.User, Serializable {
     private static final long serialVersionUID = 1L;
     private String name, mspId, enrollmentSecret, affiliation, organization, account;
     private Enrollment enrollment;
-    private Set<String> roles;
+    private Set<String> roles = new HashSet<>();
 
     public static User admin(String name, String enrollmentSecret, String mspId) {
         User user = new User();
@@ -35,7 +35,7 @@ class User implements org.hyperledger.fabric.sdk.User, Serializable {
 
     @Override
     public Set<String> getRoles() {
-        return new HashSet<>();
+        return roles;
     }
 
     @Override
@@ -48,10 +48,6 @@ class User implements org.hyperledger.fabric.sdk.User, Serializable {
         return affiliation;
     }
 
-    void setEnrollment(Enrollment enrollment) {
-        this.enrollment = enrollment;
-    }
-
     @Override
     public Enrollment getEnrollment() {
         return enrollment;
@@ -62,20 +58,15 @@ class User implements org.hyperledger.fabric.sdk.User, Serializable {
         return mspId;
     }
 
-    String getEnrollmentSecret() {
-        return enrollmentSecret;
-    }
-
-    boolean isEnrolled() {
-        return this.enrollment != null;
-    }
-
-    boolean isRegistered() {
-        return enrollmentSecret != null && !"".equals(enrollmentSecret);
-    }
-
-    void setEnrollmentSecret(String enrollmentSecret) {
+    public void setEnrollmentSecret(String enrollmentSecret) {
         this.enrollmentSecret = enrollmentSecret;
     }
 
+    public void setEnrollment(Enrollment enrollment) {
+        this.enrollment = enrollment;
+    }
+
+    public String getEnrollmentSecret() {
+        return enrollmentSecret;
+    }
 }
