@@ -31,7 +31,7 @@ public class QueryExecutorTest {
     public void runAddNewColor() throws Exception {
         Optional<ProposalResponse> proposalResponse = new WriteQueryExecutor(user)
                 .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
-                .execute("colors", "addNewColor", Colors.DEEPPINK.getIdentifier(), Colors.DEEPPINK.toJson())
+                .execute("colors", "addNewColor", Colors.POWDERBLUE.getIdentifier(), Colors.POWDERBLUE.toJson())
                 .commit()
                 .getProposalResponse();
 
@@ -42,7 +42,7 @@ public class QueryExecutorTest {
     public void runShowColorWithName() throws Exception {
         Optional<ProposalResponse> proposalResponse = new ReadQueryExecutor(user)
                 .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
-                .execute("colors", "showColorWithName", Colors.FORESTGREEN.getHex())
+                .execute("colors", "showColorWithName", Colors.DEEPPINK.getHex())
                 .getProposalResponse();
 
         Color color = new Color(Json.createReader(new StringReader(readResponsePayload(proposalResponse))).readObject());
@@ -63,6 +63,26 @@ public class QueryExecutorTest {
                 .execute("colors", "executeQuery", query)
                 .getProposalResponse();
 
+
+        Json.createReader(new StringReader(readResponsePayload(proposalResponse))).readArray()
+                .stream()
+                .map(o -> new Color((JsonObject) o))
+                .forEach(c -> System.out.println(c.toJson()));
+    }
+
+    @Test
+    public void showAllColorsFromBlueFamily() throws Exception {
+        String query = createObjectBuilder()
+                .add("selector", createObjectBuilder()
+                        .add("family", "blue")
+                        .build()
+                )
+                .build().toString();
+
+        Optional<ProposalResponse> proposalResponse = new ReadQueryExecutor(user)
+                .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
+                .execute("colors", "executeQuery", query)
+                .getProposalResponse();
 
         Json.createReader(new StringReader(readResponsePayload(proposalResponse))).readArray()
                 .stream()
