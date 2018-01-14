@@ -1,7 +1,7 @@
-package com.kmurawska.hyperledger.example;
+package com.kmurawska.hyperledger.example.blockchain;
 
-import com.kmurawska.hyperledger.example.entity.User;
-import com.kmurawska.hyperledger.example.entity.UsersStore;
+import com.kmurawska.hyperledger.example.blockchain.entity.User;
+import com.kmurawska.hyperledger.example.blockchain.entity.UsersStore;
 import org.hyperledger.fabric.sdk.Enrollment;
 import org.hyperledger.fabric.sdk.security.CryptoSuite;
 import org.hyperledger.fabric_ca.sdk.HFCAClient;

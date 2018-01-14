@@ -1,6 +1,6 @@
-package com.kmurawska.hyperledger.example;
+package com.kmurawska.hyperledger.example.blockchain;
 
-import com.kmurawska.hyperledger.example.entity.User;
+import com.kmurawska.hyperledger.example.blockchain.entity.User;
 import org.junit.Test;
 
 import static java.util.UUID.randomUUID;

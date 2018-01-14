@@ -11,6 +11,7 @@ type SmartContract struct {
 }
 
 type Color struct {
+	Family  string `json:"family"`
 	Name    string `json:"name"`
 	Rgb     string `json:"rgb"`
 	Hex     string `json:"hex"`
@@ -37,8 +38,6 @@ func (sc *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response 
 
 func initLedger(stub shim.ChaincodeStubInterface) peer.Response {
 	lawngreen := Color{Name: "lawngreen", Rgb: "rgb(124,252,0)", Hex: "#7CFC00", Example: "grass"}
-	fmt.Printf("------------------- lawngreen:\n%s\n", lawngreen)
-
 	lawngreenAsBytes, _ := json.Marshal(lawngreen)
 	stub.PutState("green", lawngreenAsBytes)
 	return shim.Success(nil)
@@ -62,14 +61,11 @@ func showColorWithName(stub shim.ChaincodeStubInterface, args []string) peer.Res
 }
 
 func addNewColor(stub shim.ChaincodeStubInterface, args []string) peer.Response {
-	if len(args) != 5 {
+	if len(args) != 2 {
 		return shim.Error("Incorrect arguments. Expecting a key and a value")
 	}
 
-	var color = Color{Name: args[1], Rgb: args[2], Hex: args[3], Example: args[4]}
-	colorAsBytes, _ := json.Marshal(color)
-
-	stub.PutState(args[0], colorAsBytes)
+	stub.PutState(args[0], []byte(args[1]))
 
 	return shim.Success(nil)
 }

@@ -1,4 +1,4 @@
-package com.kmurawska.hyperledger.example.entity;
+package com.kmurawska.hyperledger.example.blockchain.entity;
 
 import org.hyperledger.fabric.sdk.Enrollment;
 
