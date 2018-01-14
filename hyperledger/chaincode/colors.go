@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/json"
+	"bytes"
 	"fmt"
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	"github.com/hyperledger/fabric/protos/peer"
@@ -25,22 +25,15 @@ func (sc *SmartContract) Init(stub shim.ChaincodeStubInterface) peer.Response {
 func (sc *SmartContract) Invoke(stub shim.ChaincodeStubInterface) peer.Response {
 	functionName, functionParameters := stub.GetFunctionAndParameters()
 
-	if functionName == "initLedger" {
-		return initLedger(stub)
-	} else if functionName == "addNewColor" {
+	if functionName == "addNewColor" {
 		return addNewColor(stub, functionParameters)
 	} else if functionName == "showColorWithName" {
 		return showColorWithName(stub, functionParameters)
+	} else if functionName == "executeQuery" {
+		return executeQuery(stub, functionParameters[0])
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")
-}
-
-func initLedger(stub shim.ChaincodeStubInterface) peer.Response {
-	lawngreen := Color{Name: "lawngreen", Rgb: "rgb(124,252,0)", Hex: "#7CFC00", Example: "grass"}
-	lawngreenAsBytes, _ := json.Marshal(lawngreen)
-	stub.PutState("green", lawngreenAsBytes)
-	return shim.Success(nil)
 }
 
 func showColorWithName(stub shim.ChaincodeStubInterface, args []string) peer.Response {
@@ -68,6 +61,31 @@ func addNewColor(stub shim.ChaincodeStubInterface, args []string) peer.Response 
 	stub.PutState(args[0], []byte(args[1]))
 
 	return shim.Success(nil)
+}
+
+func executeQuery(stub shim.ChaincodeStubInterface, query string) peer.Response {
+	resultsIterator, err := stub.GetQueryResult(query)
+	defer resultsIterator.Close()
+	if err != nil {
+		return shim.Error("Unable to execute query: " + query)
+	}
+
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+	for resultsIterator.HasNext() {
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error("Invalid response for: " + queryResponse.Key)
+		}
+		buffer.WriteString(string(queryResponse.Value))
+		if resultsIterator.HasNext() {
+			buffer.WriteString(",")
+		}
+	}
+
+	buffer.WriteString("]")
+
+	return shim.Success(buffer.Bytes())
 }
 
 func main() {

@@ -5,22 +5,19 @@ import com.kmurawska.hyperledger.example.colors.entity.colors.Color;
 import org.hyperledger.fabric.sdk.ProposalResponse;
 import org.hyperledger.fabric.sdk.exception.InvalidArgumentException;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import javax.json.Json;
+import javax.json.JsonObject;
 import java.io.StringReader;
 import java.util.Optional;
 
 import static com.kmurawska.hyperledger.example.blockchain.HyperledgerNetwork.*;
+import static javax.json.Json.createObjectBuilder;
 import static org.junit.Assert.assertEquals;
 
 public class QueryExecutorTest {
-    private static final String FAMILY = "blue";
-    private static final String NAME = "powderblue";
-    private static final String RGB = "rgb(230,230,250)";
-    private static final String HEX = "#B0E0E6";
-    private static final String EXAMPLE = "sky";
+
 
     private static User user;
 
@@ -31,45 +28,56 @@ public class QueryExecutorTest {
     }
 
     @Test
-    @Ignore //where is commit ?
-    public void runInitLedger() throws Exception {
-        Optional<ProposalResponse> proposalResponse = new ReadQueryExecutor(user)
-                .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
-                .execute("colors", "initLedger", "")
-                .getProposalResponse();
-
-        System.out.println(readResponsePayload(proposalResponse));
-    }
-
-    @Test
     public void runAddNewColor() throws Exception {
-        Color color = new Color(FAMILY, NAME, RGB, HEX, EXAMPLE);
-
         Optional<ProposalResponse> proposalResponse = new WriteQueryExecutor(user)
                 .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
-                .execute("colors", "addNewColor", color.getIdentifier(), color.toJson())
+                .execute("colors", "addNewColor", Colors.DEEPPINK.getIdentifier(), Colors.DEEPPINK.toJson())
                 .commit()
                 .getProposalResponse();
 
-        System.out.println(readResponsePayload(proposalResponse));
+        assertEquals(200, readResponseStatus(proposalResponse));
     }
 
     @Test
     public void runShowColorWithName() throws Exception {
         Optional<ProposalResponse> proposalResponse = new ReadQueryExecutor(user)
                 .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
-                .execute("colors", "showColorWithName", HEX)
+                .execute("colors", "showColorWithName", Colors.FORESTGREEN.getHex())
                 .getProposalResponse();
 
-        String result = readResponsePayload(proposalResponse);
-        System.out.println(result);
+        Color color = new Color(Json.createReader(new StringReader(readResponsePayload(proposalResponse))).readObject());
 
-        Color color = new Color(Json.createReader(new StringReader(result)).readObject());
-        assertEquals(FAMILY, color.getFamily());
-        assertEquals(NAME, color.getName());
-        assertEquals(RGB, color.getRgb());
-        assertEquals(HEX, color.getHex());
-        assertEquals(EXAMPLE, color.getExample());
+        assertEquals(Colors.POWDERBLUE.getFamily(), color.getFamily());
+        assertEquals(Colors.POWDERBLUE.getName(), color.getName());
+        assertEquals(Colors.POWDERBLUE.getRgb(), color.getRgb());
+        assertEquals(Colors.POWDERBLUE.getHex(), color.getHex());
+        assertEquals(Colors.POWDERBLUE.getExample(), color.getExample());
+    }
+
+    @Test
+    public void showAllColors() throws Exception {
+        String query = createObjectBuilder().build().toString();
+
+        Optional<ProposalResponse> proposalResponse = new ReadQueryExecutor(user)
+                .onChannel(CHANNEL_NAME, PEER_LOCATION, ORDERER_LOCATION, EVENT_HUB_LOCATION)
+                .execute("colors", "executeQuery", query)
+                .getProposalResponse();
+
+
+        Json.createReader(new StringReader(readResponsePayload(proposalResponse))).readArray()
+                .stream()
+                .map(o -> new Color((JsonObject) o))
+                .forEach(c -> System.out.println(c.toJson()));
+    }
+
+    private int readResponseStatus(Optional<ProposalResponse> proposalResponse) {
+        return proposalResponse.map(r -> {
+            try {
+                return r.getChaincodeActionResponseStatus();
+            } catch (InvalidArgumentException e) {
+                throw new RuntimeException(e);
+            }
+        }).orElse(-1);
     }
 
     private String readResponsePayload(Optional<ProposalResponse> proposalResponse) {
@@ -80,6 +88,5 @@ public class QueryExecutorTest {
                 throw new RuntimeException(e);
             }
         }).orElse("");
-
     }
 }
