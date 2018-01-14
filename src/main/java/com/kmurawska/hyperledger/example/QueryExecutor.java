@@ -8,11 +8,14 @@ import org.hyperledger.fabric.sdk.exception.ProposalException;
 import org.hyperledger.fabric.sdk.exception.TransactionException;
 import org.hyperledger.fabric.sdk.security.CryptoSuite;
 
+import java.util.Collection;
+
 class QueryExecutor {
     private final HFClient client;
     private Channel channel;
+    private Collection<ProposalResponse> proposalResponse;
 
-    QueryExecutor(com.kmurawska.hyperledger.example.entity.User user) throws CryptoException, InvalidArgumentException {
+    QueryExecutor(User user) throws CryptoException, InvalidArgumentException {
         this.client = createHFClient();
         this.client.setUserContext(user);
     }
@@ -36,9 +39,19 @@ class QueryExecutor {
         return channel;
     }
 
-    ProposalResponse execute(String chaincode, String functionToExecute, String... functionArguments) throws ProposalException, InvalidArgumentException {
+    QueryExecutor execute(String chaincode, String functionToExecute, String... functionArguments) throws ProposalException, InvalidArgumentException {
         ChaincodeQuery query = new ChaincodeQuery(chaincode, functionToExecute, functionArguments);
-        return channel.queryByChaincode(createQueryByChaincodeRequest(query)).stream().findFirst().orElse(null);
+        proposalResponse = channel.queryByChaincode(createQueryByChaincodeRequest(query));
+        return this;
+    }
+
+    QueryExecutor commit() throws ProposalException, InvalidArgumentException {
+        channel.sendTransaction(proposalResponse);
+        return this;
+    }
+
+    ProposalResponse getResponse() {
+        return proposalResponse.stream().findFirst().orElse(null);
     }
 
     private QueryByChaincodeRequest createQueryByChaincodeRequest(ChaincodeQuery query) {
