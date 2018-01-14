@@ -1,6 +1,6 @@
 # hyperledger-example
 
-####From scratch (Windows)
+#### From scratch (Windows)
 
 1. ###### Create a docker machine 
 
