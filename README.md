@@ -6,7 +6,7 @@
 
     run `upMachine.ps1` script from ci directory  
 
-2. ###### Pull hyperledger fabric-ca docker images
+2. ###### Pull hyperledger docker images
  
 3. ###### Generate cryptographic materials
 
