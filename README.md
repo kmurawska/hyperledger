@@ -1,6 +1,6 @@
-# hyperledger-example
+# Hyperledger
 
-#### From scratch (Windows)
+#### Setting up network with an example chaincode
 
 1. ###### Create a docker machine 
 
